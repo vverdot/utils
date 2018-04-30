@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# @vverdot
+#
+# Bash utility that echoes the last shell commands
+# Usage: . rip [nb_cmds]
+#  nb_cmds: (optional) the number of previous
+#            commands to echo (default: 1)
+#
+# Note: it must be sourced to work!
+#  tip->create alias
+#  $ alias rip="source /path/to/rip"
+#
+# Example:
+# $ echo "test"
+# test
+# $ . rip >> echo_cmd
+# $ cat echo_cmd
+# echo "test"
+
+# Script must be used sourced only
+[[ "$0" != "$BASH_SOURCE" ]] && sourced=1 || sourced=0
+
+if [ $sourced -eq 1 ]; then
+
+    NB_CMDS=${1:-1}
+
+    re='^[0-9]+$'
+    if ! [[ $NB_CMDS =~ $re ]] ; then
+           echo "Error: invalid param, expecting a number." >&2
+           false
+    else
+           fc -ln -$(expr $NB_CMDS + 1) -2 | sed -e 's/^[ \t]*//'
+    fi
+
+else
+    echo "Error: script must be sourced to work." >&2
+    false
+fi
